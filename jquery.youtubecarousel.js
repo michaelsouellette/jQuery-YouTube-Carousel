@@ -19,13 +19,26 @@
 /*YouTube Carousel Code*/
 
 /*List of YouTube videos - you need just the video ID for this (ex:)*/
-var yt_videos = ['4r7wHMg5Yjg','txqiwrbYGrs','dMH0bHeiRNg','Z3ZAGBL6UBA','60og9gwKh1o','2K-TICdG1R8','CdD8s0jFJYo','Q5im0Ssyyus','4pXfHLUlZf4'];
+var yt_videos = ['4r7wHMg5Yjg','txqiwrbYGrs','dMH0bHeiRNg','Z3ZAGBL6UBA','60og9gwKh1o','2K-TICdG1R8','CdD8s0jFJYo','Q5im0Ssyyus','4pXfHLUlZf4'],
+    yt_playlist = true,
+    yt_playlist_id = 'PLs4hTtftqnlB6i9YvBwKdZeWy-Ro9K93j',
+    yt_key = 'AIzaSyD34MZFlbDtZpQLSNu9i0SeSM-qrHgimcw',
 
-/*Video height and width*/
-var yt_height = 419;
-var yt_width = 766;
+    /*Video height and width*/
+    yt_height = 419,
+    yt_width = 766;
 
 /*-----DO NOT EDIT BELOW THIS-----*/
+if(yt_playlist) {
+  jQuery.get({
+      url: 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=PLs4hTtftqnlB6i9YvBwKdZeWy-Ro9K93j' + yt_playlist_id + '&key=' + yt_key,
+      dataType: "jsonp",
+      success: function (data) {
+        parsePlaylist(data);
+      }
+  });
+}
+
 jQuery(document).ready(function () {
   var yt_html = "";
 
@@ -44,6 +57,21 @@ jQuery(document).ready(function () {
     wrap: 'circular'
   });
 });
+
+//Playlist sorting
+function parsePlaylist(data) {
+    //return playlist clip number
+    var klipove= data.feed.openSearch$totalResults.$t;
+    //put clips in  <li>
+
+    for(i=0;i<=klipove-1;i++) {
+        var videoId = data.feed.entry[i].link[1].href;
+        //get video id  ID
+        var id= extract(videoId);
+        thumb = data.feed.entry[i].media$group.media$thumbnail[0].url;
+        $('<li><img src="'+thumb+'" alt="'+id+'" class="thumb"/></li>').appendTo('.cont');
+    }
+}
 
 
 function change_embeded(video_id){
